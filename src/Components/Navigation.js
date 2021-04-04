@@ -16,6 +16,9 @@ export default class Navigation extends Component {
           <Link className="navbar-brand" to="/list">
             Book List
           </Link>
+          <Link className="navbar-brand" to="/users">
+            User List
+          </Link>
         </Nav>
       </Navbar>
     );
