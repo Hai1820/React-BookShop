@@ -5,13 +5,15 @@ import {
   faSave,
   faUndo,
 } from "@fortawesome/free-solid-svg-icons";
+import { connect } from "react-redux";
+import { saveBook } from "../../services/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { Component } from "react";
 import { Button, Card, Col, Form } from "react-bootstrap";
-import MyToasts from "./MyToasts";
+import MyToasts from "../MyToasts";
 
-export default class Book extends Component {
+class Book extends Component {
   constructor(props) {
     super(props);
     this.state = this.initialState;
@@ -109,8 +111,9 @@ export default class Book extends Component {
       language: this.state.language,
       genre: this.state.genre,
     };
-    axios.post("http://localhost:8080/api/books", book).then((response) => {
-      if (response.data != null) {
+    this.props.saveBook(book);
+    setTimeout(() => {
+      if (this.props.savedBookObject.data != null) {
         this.setState({ show: true, method: "post" });
         setTimeout(() => {
           this.setState({ show: false });
@@ -118,7 +121,18 @@ export default class Book extends Component {
       } else {
         this.setState({ show: false });
       }
-    });
+    }, 3000);
+
+    // axios.post("http://localhost:8080/api/books", book).then((response) => {
+    //   if (response.data != null) {
+    //     this.setState({ show: true, method: "post" });
+    //     setTimeout(() => {
+    //       this.setState({ show: false });
+    //     }, 3000);
+    //   } else {
+    //     this.setState({ show: false });
+    //   }
+    // });
     this.setState(this.initialState);
   };
   onChange = (e) => {
@@ -322,3 +336,14 @@ export default class Book extends Component {
     );
   }
 }
+const mapStateToProps = (state) => {
+  return {
+    savedBookObject: state.book,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    saveBook: (book) => dispatch(saveBook(book)),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Book);

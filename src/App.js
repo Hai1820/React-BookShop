@@ -1,12 +1,12 @@
 import { Container, Row, Col } from "react-bootstrap";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "./App.css";
-import Book from "./Components/Book";
+import Book from "./Components/book/Book";
 import Footer from "./Components/Footer";
 import Navigation from "./Components/Navigation";
 import Welcome from "./Components/Welcome";
-import BookList from "./Components/BookList";
-import UserList from "./Components/UserList";
+import BookList from "./Components/book/BookList";
+import UserList from "./Components/user/UserList";
 function App() {
   return (
     <Router>

@@ -1,4 +1,4 @@
-import "./Style.css";
+import "../../assets/Style.css";
 import {
   faEdit,
   faFastBackward,
@@ -22,7 +22,7 @@ import {
   Table,
 } from "react-bootstrap";
 import axios from "axios";
-import MyToasts from "./MyToasts";
+import MyToasts from "../MyToasts";
 import { Link } from "react-router-dom";
 export default class BookList extends Component {
   constructor(props) {

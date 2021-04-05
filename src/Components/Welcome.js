@@ -7,7 +7,10 @@ export default class Welcome extends Component {
       <Jumbotron className="bg-dark text-white">
         <h1>Welcome to Book Shop</h1>
         <blockquote className="blockquote mb-0">
-          <p>Good friends, Goob book, and a sleep conscience:</p>
+          <p>
+            Good friends, Goob book, and a sleep conscience:This is the ideal
+            life
+          </p>
           <footer className="blockquote-footer">Hoang Hai</footer>
         </blockquote>
       </Jumbotron>
