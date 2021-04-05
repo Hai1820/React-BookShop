@@ -15,10 +15,14 @@ export default class Book extends Component {
   constructor(props) {
     super(props);
     this.state = this.initialState;
+    this.state = {
+      genres: [],
+      languages: [],
+      show: false,
+    };
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
     this.onReset = this.onReset.bind(this);
-    this.state.show = false;
   }
   initialState = {
     id: "",
@@ -28,13 +32,45 @@ export default class Book extends Component {
     isbnNumber: "",
     price: "",
     language: "",
+    genre: "",
   };
   componentDidMount() {
     const bookId = +this.props.match.params.id;
     if (bookId) {
       this.findBookById(bookId);
     }
+    this.findAllLanguages();
+    this.findAllGenres();
   }
+  findAllLanguages = () => {
+    axios
+      .get("http://localhost:8080/api/books/language")
+      .then((response) => response.data)
+      .then((data) => {
+        this.setState({
+          languages: [{ value: "", display: "Select language" }].concat(
+            data.map((language) => {
+              return { value: language, display: language };
+            }),
+          ),
+        });
+      });
+  };
+  findAllGenres = () => {
+    axios
+      .get("http://localhost:8080/api/books/genres")
+      .then((response) => response.data)
+      .then((data) => {
+        this.setState({
+          genres: [{ value: "", display: "Select Genre" }].concat(
+            data.map((genre) => {
+              return { value: genre, display: genre };
+            }),
+          ),
+        });
+      });
+  };
+
   findBookById = (bookId) => {
     axios
       .get("http://localhost:8080/api/books/" + bookId)
@@ -48,6 +84,7 @@ export default class Book extends Component {
             isbnNumber: response.data.isbnNumber,
             price: response.data.price,
             language: response.data.language,
+            genre: response.data.genre,
           });
         }
       })
@@ -70,6 +107,7 @@ export default class Book extends Component {
       isbnNumber: this.state.isbnNumber,
       price: this.state.price,
       language: this.state.language,
+      genre: this.state.genre,
     };
     axios.post("http://localhost:8080/api/books", book).then((response) => {
       if (response.data != null) {
@@ -98,6 +136,7 @@ export default class Book extends Component {
       isbnNumber: this.state.isbnNumber,
       price: this.state.price,
       language: this.state.language,
+      genre: this.state.genre,
     };
     axios.put("http://localhost:8080/api/books", book).then((response) => {
       if (response.data != null) {
@@ -121,6 +160,7 @@ export default class Book extends Component {
       isbnNumber,
       price,
       language,
+      genre,
     } = this.state;
     return (
       <div>
@@ -223,14 +263,37 @@ export default class Book extends Component {
                   <Form.Label>Language</Form.Label>
                   <Form.Control
                     required
-                    autoComplete="off"
-                    className="bg-dark text-white"
+                    as="select"
+                    custom
+                    onChange={this.onChange}
                     name="language"
                     value={language}
+                    className={"bg-dark text-white"}
+                  >
+                    {this.state.languages.map((language) => (
+                      <option key={language.value} value={language.value}>
+                        {language.display}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+                <Form.Group as={Col} controlId="formGridGenre">
+                  <Form.Label>Genre</Form.Label>
+                  <Form.Control
+                    required
+                    as="select"
+                    custom
                     onChange={this.onChange}
-                    type="text"
-                    placeholder="Enter Book Language"
-                  />
+                    name="genre"
+                    value={genre}
+                    className={"bg-dark text-white"}
+                  >
+                    {this.state.genres.map((genre) => (
+                      <option key={genre.value} value={genre.value}>
+                        {genre.display}
+                      </option>
+                    ))}
+                  </Form.Control>
                 </Form.Group>
               </Form.Row>
             </Card.Body>

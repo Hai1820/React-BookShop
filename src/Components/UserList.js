@@ -84,7 +84,7 @@ export default class UserList extends Component {
       border: "1px solid #17A2B*",
       color: "#17A2B8",
       textAlign: "center",
-      fontWeoght: "bold",
+      fontWeight: "bold",
     };
     return (
       <div>
@@ -143,58 +143,60 @@ export default class UserList extends Component {
               </tbody>
             </Table>
           </Card.Body>
-          <Card.Footer>
-            <div style={{ float: "left" }}>
-              Showing page {currentPage} of {totalPages}
-            </div>
-            <div style={{ float: "right" }}>
-              <InputGroup size="sm">
-                <InputGroup.Prepend>
-                  <Button
-                    type="button"
-                    variant="outline-info"
-                    disabled={currentPage === 1 ? true : false}
-                    onClick={this.firstPage}
-                  >
-                    <FontAwesomeIcon icon={faFastBackward} /> First
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline-info"
-                    disabled={currentPage === 1 ? true : false}
-                    onClick={this.prevPage}
-                  >
-                    <FontAwesomeIcon icon={faStepBackward} /> Prev
-                  </Button>
-                </InputGroup.Prepend>
-                <FormControl
-                  style={pageNumberCss}
-                  className={"bg-dark"}
-                  name="currentPage"
-                  value={currentPage}
-                  onChange={this.changePage}
-                />
-                <InputGroup.Append>
-                  <Button
-                    type="button"
-                    variant="outline-info"
-                    disabled={currentPage === totalPages ? true : false}
-                    onClick={this.nextPage}
-                  >
-                    <FontAwesomeIcon icon={faStepForward} /> Next
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline-info"
-                    disabled={currentPage === totalPages ? true : false}
-                    onClick={this.lastPage}
-                  >
-                    <FontAwesomeIcon icon={faFastForward} /> Last
-                  </Button>
-                </InputGroup.Append>
-              </InputGroup>
-            </div>
-          </Card.Footer>
+          {users.length > 0 ? (
+            <Card.Footer>
+              <div style={{ float: "left" }}>
+                Showing page {currentPage} of {totalPages}
+              </div>
+              <div style={{ float: "right" }}>
+                <InputGroup size="sm">
+                  <InputGroup.Prepend>
+                    <Button
+                      type="button"
+                      variant="outline-info"
+                      disabled={currentPage === 1 ? true : false}
+                      onClick={this.firstPage}
+                    >
+                      <FontAwesomeIcon icon={faFastBackward} /> First
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline-info"
+                      disabled={currentPage === 1 ? true : false}
+                      onClick={this.prevPage}
+                    >
+                      <FontAwesomeIcon icon={faStepBackward} /> Prev
+                    </Button>
+                  </InputGroup.Prepend>
+                  <FormControl
+                    style={pageNumberCss}
+                    className={"bg-dark"}
+                    name="currentPage"
+                    value={currentPage}
+                    onChange={this.changePage}
+                  />
+                  <InputGroup.Append>
+                    <Button
+                      type="button"
+                      variant="outline-info"
+                      disabled={currentPage === totalPages ? true : false}
+                      onClick={this.nextPage}
+                    >
+                      <FontAwesomeIcon icon={faStepForward} /> Next
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline-info"
+                      disabled={currentPage === totalPages ? true : false}
+                      onClick={this.lastPage}
+                    >
+                      <FontAwesomeIcon icon={faFastForward} /> Last
+                    </Button>
+                  </InputGroup.Append>
+                </InputGroup>
+              </div>
+            </Card.Footer>
+          ) : null}
         </Card>
       </div>
     );

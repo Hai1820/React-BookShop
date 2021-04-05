@@ -8,15 +8,12 @@ import Welcome from "./Components/Welcome";
 import BookList from "./Components/BookList";
 import UserList from "./Components/UserList";
 function App() {
-  const marginTop = {
-    marginTop: "20px",
-  };
   return (
     <Router>
       <Navigation />
       <Container>
         <Row>
-          <Col lg="12" style={marginTop}>
+          <Col lg="12" className="margin-top">
             <Switch>
               <Route path="/" exact component={Welcome} />
 
