@@ -274,7 +274,7 @@ class Book extends Component {
                       {this.state.coverPhotoUrl !== "" && (
                         <Image
                           src={this.state.coverPhotoUrl}
-                          roundedRight
+                          roundedright="true"
                           width="40"
                           height="38"
                         />

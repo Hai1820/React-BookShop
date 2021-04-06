@@ -7,6 +7,8 @@ import Navigation from "./Components/Navigation";
 import Welcome from "./Components/Welcome";
 import BookList from "./Components/book/BookList";
 import UserList from "./Components/user/UserList";
+import Login from "./Components/user/Login";
+import Register from "./Components/user/Register";
 function App() {
   return (
     <Router>
@@ -21,6 +23,9 @@ function App() {
               <Route path="/edit/:id" exact component={Book} />
               <Route path="/list" exact component={BookList} />
               <Route path="/users" exact component={UserList} />
+              <Route path="/login" exact component={Login} />
+              <Route path="/register" exact component={Register} />
+              <Route path="/logout" exact component={Login} />
             </Switch>
           </Col>
         </Row>
