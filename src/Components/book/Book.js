@@ -6,11 +6,11 @@ import {
   faUndo,
 } from "@fortawesome/free-solid-svg-icons";
 import { connect } from "react-redux";
-import { saveBook } from "../../services/index";
+import { saveBook, fetchBook, updateBook } from "../../services/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { Component } from "react";
-import { Button, Card, Col, Form } from "react-bootstrap";
+import { Button, Card, Col, Form, Image, InputGroup } from "react-bootstrap";
 import MyToasts from "../MyToasts";
 
 class Book extends Component {
@@ -74,25 +74,42 @@ class Book extends Component {
   };
 
   findBookById = (bookId) => {
-    axios
-      .get("http://localhost:8080/api/books/" + bookId)
-      .then((response) => {
-        if (response.data != null) {
-          this.setState({
-            id: response.data.id,
-            title: response.data.title,
-            author: response.data.author,
-            coverPhotoUrl: response.data.coverPhotoUrl,
-            isbnNumber: response.data.isbnNumber,
-            price: response.data.price,
-            language: response.data.language,
-            genre: response.data.genre,
-          });
-        }
-      })
-      .catch((err) => {
-        console.error("Error - " + err);
-      });
+    this.props.fetchBook(bookId);
+    setTimeout(() => {
+      let book = this.props.bookObject.book;
+      if (book != null) {
+        this.setState({
+          id: book.id,
+          title: book.title,
+          author: book.author,
+          coverPhotoUrl: book.coverPhotoUrl,
+          isbnNumber: book.isbnNumber,
+          price: book.price,
+          language: book.language,
+          genre: book.genre,
+        });
+      }
+    }, 1000);
+
+    // axios
+    //   .get("http://localhost:8080/api/books/" + bookId)
+    //   .then((response) => {
+    //     if (response.data != null) {
+    //       this.setState({
+    //         id: response.data.id,
+    //         title: response.data.title,
+    //         author: response.data.author,
+    //         coverPhotoUrl: response.data.coverPhotoUrl,
+    //         isbnNumber: response.data.isbnNumber,
+    //         price: response.data.price,
+    //         language: response.data.language,
+    //         genre: response.data.genre,
+    //       });
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.error("Error - " + err);
+    //   });
   };
   onReset = () => {
     this.setState(() => this.initialState);
@@ -113,16 +130,15 @@ class Book extends Component {
     };
     this.props.saveBook(book);
     setTimeout(() => {
-      if (this.props.savedBookObject.data != null) {
+      if (this.props.savedBookObject.book != null) {
         this.setState({ show: true, method: "post" });
-        setTimeout(() => {
-          this.setState({ show: false });
-        }, 3000);
+        setTimeout(() => this.setState({ show: false }), 2000);
+        setTimeout(() => this.bookList(), 300);
       } else {
         this.setState({ show: false });
       }
-    }, 3000);
-
+    }, 2000);
+    this.setState(this.initialState);
     // axios.post("http://localhost:8080/api/books", book).then((response) => {
     //   if (response.data != null) {
     //     this.setState({ show: true, method: "post" });
@@ -133,7 +149,6 @@ class Book extends Component {
     //     this.setState({ show: false });
     //   }
     // });
-    this.setState(this.initialState);
   };
   onChange = (e) => {
     this.setState({
@@ -152,17 +167,29 @@ class Book extends Component {
       language: this.state.language,
       genre: this.state.genre,
     };
-    axios.put("http://localhost:8080/api/books", book).then((response) => {
-      if (response.data != null) {
+    this.props.updateBook(book);
+    setTimeout(() => {
+      if (this.props.updatedBookObject.book !== null) {
         this.setState({ show: true, method: "put" });
         setTimeout(() => {
           this.setState({ show: false });
-        }, 3000);
-        setTimeout(() => this.bookList(), 300);
+          setTimeout(() => this.bookList(), 100);
+        }, 1000);
       } else {
         this.setState({ show: false });
       }
-    });
+    }, 2000);
+    // axios.put("http://localhost:8080/api/books", book).then((response) => {
+    //   if (response.data != null) {
+    //     this.setState({ show: true, method: "put" });
+    //     setTimeout(() => {
+    //       this.setState({ show: false });
+    //     }, 3000);
+    //     setTimeout(() => this.bookList(), 300);
+    //   } else {
+    //     this.setState({ show: false });
+    //   }
+    // });
     this.setState(this.initialState);
   };
 
@@ -232,16 +259,28 @@ class Book extends Component {
               <Form.Row>
                 <Form.Group as={Col} controlId="formGridCoverPhotoUrl">
                   <Form.Label>Cover Photo Url</Form.Label>
-                  <Form.Control
-                    required
-                    autoComplete="off"
-                    className="bg-dark text-white"
-                    name="coverPhotoUrl"
-                    value={coverPhotoUrl}
-                    onChange={this.onChange}
-                    type="text"
-                    placeholder="Enter Book CoverPhotoUrl"
-                  />
+                  <InputGroup>
+                    <Form.Control
+                      required
+                      autoComplete="off"
+                      className="bg-dark text-white"
+                      name="coverPhotoUrl"
+                      value={coverPhotoUrl}
+                      onChange={this.onChange}
+                      type="text"
+                      placeholder="Enter Book CoverPhotoUrl"
+                    />
+                    <InputGroup.Append>
+                      {this.state.coverPhotoUrl !== "" && (
+                        <Image
+                          src={this.state.coverPhotoUrl}
+                          roundedRight
+                          width="40"
+                          height="38"
+                        />
+                      )}
+                    </InputGroup.Append>
+                  </InputGroup>
                 </Form.Group>
 
                 <Form.Group as={Col} controlId="formGridISBNNumber">
@@ -339,11 +378,15 @@ class Book extends Component {
 const mapStateToProps = (state) => {
   return {
     savedBookObject: state.book,
+    bookObject: state.book,
+    updatedBookObject: state.book,
   };
 };
 const mapDispatchToProps = (dispatch) => {
   return {
     saveBook: (book) => dispatch(saveBook(book)),
+    fetchBook: (bookId) => dispatch(fetchBook(bookId)),
+    updateBook: (book) => dispatch(updateBook(book)),
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Book);

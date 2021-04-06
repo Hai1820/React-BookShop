@@ -1,8 +1,11 @@
 import axios from "axios";
 import {
   SAVE_BOOK_REQUEST,
-  SAVE_BOOK_SUCCESS,
-  SAVE_BOOK_FAILURE,
+  BOOK_SUCCESS,
+  BOOK_FAILURE,
+  UPDATE_BOOK_REQUEST,
+  FETCH_BOOK_REQUEST,
+  DELETE_BOOK_REQUEST,
 } from "./bookTypes";
 export const saveBook = (book) => {
   return (dispatch) => {
@@ -10,11 +13,55 @@ export const saveBook = (book) => {
     axios
       .post("http://localhost:8080/api/books", book)
       .then((response) => {
-        dispatch(saveBookSuccess(response.data));
+        dispatch(bookSuccess(response.data));
       })
       .catch((error) => {
-        dispatch(saveBookFailure(error));
+        dispatch(bookFailure(error));
       });
+  };
+};
+export const fetchBook = (bookId) => {
+  return (dispatch) => {
+    dispatch(fetchBookRequest());
+    axios
+      .get("http://localhost:8080/api/books/" + bookId)
+      .then((response) => {
+        dispatch(bookSuccess(response.data));
+      })
+      .catch((error) => {
+        dispatch(bookFailure(error));
+      });
+  };
+};
+export const updateBook = (book) => {
+  return (dispatch) => {
+    dispatch(updateBookRequest());
+    axios
+      .put("http://localhost:8080/api/books", book)
+      .then((response) => {
+        dispatch(bookSuccess(response.data));
+      })
+      .catch((error) => {
+        dispatch(bookFailure(error));
+      });
+  };
+};
+export const deleteBook = (bookId) => {
+  return (dispatch) => {
+    dispatch(deleteBookRequest());
+    axios
+      .delete("http://localhost:8080/api/books/" + bookId)
+      .then((response) => {
+        dispatch(bookSuccess(response.data));
+      })
+      .catch((error) => {
+        dispatch(bookFailure(error));
+      });
+  };
+};
+const deleteBookRequest = () => {
+  return {
+    type: DELETE_BOOK_REQUEST,
   };
 };
 const saveBookRequest = () => {
@@ -22,16 +69,26 @@ const saveBookRequest = () => {
     type: SAVE_BOOK_REQUEST,
   };
 };
-const saveBookSuccess = (book) => {
+const fetchBookRequest = () => {
   return {
-    type: SAVE_BOOK_SUCCESS,
+    type: FETCH_BOOK_REQUEST,
+  };
+};
+const updateBookRequest = () => {
+  return {
+    type: UPDATE_BOOK_REQUEST,
+  };
+};
+const bookSuccess = (book) => {
+  return {
+    type: BOOK_SUCCESS,
     payload: book,
   };
 };
 
-const saveBookFailure = (error) => {
+const bookFailure = (error) => {
   return {
-    type: SAVE_BOOK_FAILURE,
+    type: BOOK_FAILURE,
     payload: error,
   };
 };

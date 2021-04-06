@@ -10,6 +10,8 @@ import {
   faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
+import { connect } from "react-redux";
+import { deleteBook } from "../../services/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { Component } from "react";
 import {
@@ -24,29 +26,30 @@ import {
 import axios from "axios";
 import MyToasts from "../MyToasts";
 import { Link } from "react-router-dom";
-export default class BookList extends Component {
+class BookList extends Component {
   constructor(props) {
     super(props);
     this.state = {
       books: [],
       currentPage: 1,
       booksPerPage: 5,
-      sortToggle: true,
+      sortDir: "asc",
       search: "",
     };
   }
   sortData = () => {
-    this.setState((state) => ({
-      sortToggle: !state.sortToggle,
-    }));
-    this.findAllBooks(this.state.currentPage);
+    setTimeout(() => {
+      this.state.sortDir === "asc"
+        ? this.setState({ sortDir: "desc" })
+        : this.setState({ sortDir: "asc" });
+      this.findAllBooks(this.state.currentPage);
+    }, 500);
   };
   componentDidMount() {
     this.findAllBooks(this.state.currentPage);
   }
   findAllBooks(currentPage) {
     currentPage -= 1;
-    let sortDir = this.state.sortToggle ? "asc" : "desc";
     axios
       .get(
         "http://localhost:8080/api/books?pageNumber=" +
@@ -54,7 +57,7 @@ export default class BookList extends Component {
           "&pageSize=" +
           this.state.booksPerPage +
           "&sortBy=price&sortDir=" +
-          sortDir,
+          this.state.sortDir,
       )
 
       .then((response) => response.data)
@@ -68,21 +71,33 @@ export default class BookList extends Component {
       );
   }
   onDelete = (bookId) => {
-    axios
-      .delete("http://localhost:8080/api/books/" + bookId)
-      .then((response) => {
-        if (response.data != null) {
-          this.setState({ show: true });
-          setTimeout(() => {
-            this.setState({ show: false });
-          }, 3000);
-          this.setState({
-            books: this.state.books.filter((book) => book.id !== bookId),
-          });
-        } else {
+    this.props.deleteBook(bookId);
+    setTimeout(() => {
+      if (this.props.bookObject != null) {
+        this.setState({ show: true });
+        setTimeout(() => {
           this.setState({ show: false });
-        }
-      });
+        }, 3000);
+        this.findAllBooks(this.state.currentPage);
+      } else {
+        this.setState({ show: false });
+      }
+    }, 1000);
+    // axios
+    //   .delete("http://localhost:8080/api/books/" + bookId)
+    //   .then((response) => {
+    //     if (response.data != null) {
+    //       this.setState({ show: true });
+    //       setTimeout(() => {
+    //         this.setState({ show: false });
+    //       }, 3000);
+    //       this.setState({
+    //         books: this.state.books.filter((book) => book.id !== bookId),
+    //       });
+    //     } else {
+    //       this.setState({ show: false });
+    //     }
+    //   });
   };
   changePage = (e) => {
     let targetPage = parseInt(e.target.value);
@@ -238,7 +253,7 @@ export default class BookList extends Component {
                     Price
                     <div
                       className={
-                        this.state.sortToggle
+                        this.state.sortDir === "asc"
                           ? "arrow arrow-down"
                           : "arrow arrow-up"
                       }
@@ -355,3 +370,14 @@ export default class BookList extends Component {
     );
   }
 }
+const mapStateToProps = (state) => {
+  return {
+    bookObject: state.book,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    deleteBook: (bookId) => dispatch(deleteBook(bookId)),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(BookList);
